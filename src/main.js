@@ -1,5 +1,5 @@
 import { copyEditorCode, clearConsole, loadSnippet, runCode, wireEditorKeyboard } from './editor.js';
-import { buildMetaAddress, createPayment, generateKeys, scanAnnouncement } from './guided-flow.js';
+import { buildMetaAddress, createPayment, generateKeys, runBatchScan, scanAnnouncement } from './guided-flow.js';
 import { loadSpecterSdk } from './sdk-loader.js';
 import { setSdkModule } from './state.js';
 import { byId, markSdkReady, setInitError, switchTab, toggleStep, copyField, wireUiControls } from './ui.js';
@@ -9,6 +9,7 @@ const handlers = {
   buildMetaAddress,
   createPayment,
   scanAnnouncement,
+  runBatchScan,
   loadSnippet,
   copyEditorCode,
   runCode,
@@ -40,6 +41,7 @@ async function bootstrap() {
     byId('btn-keygen').disabled = false;
     byId('btn-payment').disabled = false;
     byId('btn-scan').disabled = false;
+    byId('btn-batch-scan').disabled = false;
     loadSnippet('full-flow');
   } catch (error) {
     setInitError('WASM init failed', error);
@@ -69,5 +71,6 @@ function installRealGlobals() {
     doBuildMeta: buildMetaAddress,
     doCreatePayment: createPayment,
     doScanAnnouncement: scanAnnouncement,
+    runBatchScan,
   });
 }

@@ -101,6 +101,10 @@ export function wireUiControls(handlers) {
   byId('btn-meta')?.addEventListener('click', handlers.buildMetaAddress);
   byId('btn-payment')?.addEventListener('click', handlers.createPayment);
   byId('btn-scan')?.addEventListener('click', handlers.scanAnnouncement);
+  byId('btn-batch-scan')?.addEventListener('click', handlers.runBatchScan);
+  byId('batch-count')?.addEventListener('input', (event) => {
+    byId('batch-count-value').textContent = event.target.value;
+  });
   byId('snippet-select')?.addEventListener('change', (event) => handlers.loadSnippet(event.target.value));
   byId('copy-editor')?.addEventListener('click', handlers.copyEditorCode);
   byId('run-code')?.addEventListener('click', handlers.runCode);

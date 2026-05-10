@@ -11,27 +11,37 @@
 
   <header>
     <div class="logo-mark">
-      <div class="logo-hex">
-        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" stroke="#00d4a0" stroke-width="1.5" fill="none"/>
-          <polygon points="18,8 26,12.5 26,23.5 18,28 10,23.5 10,12.5" stroke="#00d4a0" stroke-width="0.75" fill="rgba(0,212,160,0.06)"/>
-          <circle cx="18" cy="18" r="2.5" fill="#00d4a0"/>
-        </svg>
+      <div class="logo-asset-wrap">
+        <img class="logo-asset" src="./src/logo/dark-logo-large.png" alt="SPECTER logo">
       </div>
       <div>
         <div class="logo-text">SPECTER SDK</div>
         <div class="logo-sub">POST-QUANTUM STEALTH ADDRESSES</div>
       </div>
     </div>
-    <div class="badge live">
-      <div class="pulse"></div>
-      WASM · IN-BROWSER
+    <div class="header-actions">
+      <a class="header-link star-link" href="https://github.com/specter-privacy/specter-sdk" target="_blank" rel="noreferrer">
+        <span class="star-icon">☆</span>
+        STAR
+      </a>
+      <a class="header-link package-link" href="https://www.npmjs.com/package/@specterpq/sdk" target="_blank" rel="noreferrer">
+        @specterpq/sdk
+      </a>
+      <div class="badge live">
+        <div class="pulse"></div>
+        WASM · IN-BROWSER
+      </div>
     </div>
   </header>
 
   <div class="hero">
-    <h1>Interactive<br><em>Playground</em></h1>
-    <p>Generate ML-KEM-768 stealth addresses, create payments, and scan announcements — all cryptography runs locally in WebAssembly. No keys leave your browser.</p>
+    <div class="hero-copy">
+      <h1>Interactive<br><em>Playground</em></h1>
+      <p>Generate ML-KEM-768 stealth addresses, create payments, and scan announcements — all cryptography runs locally in WebAssembly. No keys leave your browser.</p>
+    </div>
+    <div class="hero-logo-wrap" aria-hidden="true">
+      <img class="hero-logo" src="./src/logo/dark-logo-large.png" alt="">
+    </div>
   </div>
 
   <!-- Tab navigation -->
@@ -211,6 +221,24 @@
         <textarea class="input-field" id="scan-ct-input" placeholder="ephemeralCiphertext hex…" rows="2"></textarea>
         <label class="field-label">VIEW TAG</label>
         <textarea class="input-field textarea-compact" id="scan-vt-input" placeholder="viewTag (number 0–255)…" rows="1"></textarea>
+
+        <div class="test-panel">
+          <div class="test-panel-header">
+            <div>
+              <div class="test-panel-title">TAMPER TEST</div>
+              <p class="test-panel-copy">Modify the announcement only for this scan to verify that SPECTER rejects tampered data.</p>
+            </div>
+          </div>
+          <label class="check-row">
+            <input type="checkbox" id="tamper-flip-ct">
+            <span>Flip last byte of ciphertext <small>simulates a wrong announcement</small></span>
+          </label>
+          <label class="check-row">
+            <input type="checkbox" id="tamper-zero-tag">
+            <span>Force view tag to 0x00 <small>forces a view_tag_mismatch</small></span>
+          </label>
+        </div>
+
         <button class="btn btn-blue" id="btn-scan" disabled>
           <span class="spinner is-hidden" id="sp-scan"></span>
           RUN scanAnnouncement()
@@ -232,6 +260,31 @@
               <div class="output-value secret">[ redacted — import directly into viem / ethers / @mysten/sui ]</div>
             </div>
           </div>
+        </div>
+
+        <div class="test-panel batch-panel">
+          <div class="test-panel-header">
+            <div>
+              <div class="test-panel-title">BATCH SCAN TEST</div>
+              <p class="test-panel-copy">Generate decoy announcements and scan them with <code>scanAnnouncements()</code>.</p>
+            </div>
+          </div>
+          <div class="batch-controls">
+            <label class="range-control">
+              <span>ANNOUNCEMENT COUNT</span>
+              <input type="range" id="batch-count" min="1" max="50" value="20">
+              <strong id="batch-count-value">20</strong>
+            </label>
+            <label class="check-row check-row-inline">
+              <input type="checkbox" id="batch-include-match" checked>
+              <span>Include 1 genuine match</span>
+            </label>
+            <button class="btn btn-blue btn-compact" id="btn-batch-scan" disabled>
+              <span class="spinner is-hidden" id="sp-batch"></span>
+              RUN BATCH
+            </button>
+          </div>
+          <div class="batch-result" id="batch-result"></div>
         </div>
       </div>
     </div>
