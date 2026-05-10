@@ -9,8 +9,8 @@
     --border: #22262d;
     --border-bright: #2e3440;
     --text: #e8eaf0;
-    --text-muted: #6b7380;
-    --text-dim: #3d434d;
+    --text-muted: #9ea8ba;
+    --text-dim: #768195;
     --accent: #00d4a0;
     --accent-dim: rgba(0, 212, 160, 0.12);
     --accent-glow: rgba(0, 212, 160, 0.08);
@@ -28,7 +28,7 @@
     background: var(--bg);
     color: var(--text);
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.6;
     min-height: 100vh;
   }
@@ -1182,6 +1182,77 @@
   .badge.error {
     color: var(--red);
     border-color: var(--red);
+  }
+
+  /* Readability tuning */
+  .hero p,
+  .desc {
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .desc-muted,
+  .test-panel-copy {
+    font-size: 13px;
+  }
+
+  .init-bar-left {
+    font-size: 13px;
+  }
+
+  .step-num {
+    font-size: 12px;
+  }
+
+  .step-title {
+    font-size: 14px;
+  }
+
+  .code-block {
+    font-size: 12.5px;
+    color: #b2c1d6;
+  }
+
+  .code-block .cm {
+    color: #7f90a7;
+  }
+
+  #code-editor {
+    color: #ccd5e2;
+    font-size: 13.5px;
+  }
+
+  .output-value,
+  .input-field,
+  .btn,
+  .console-body,
+  .tamper-result {
+    font-size: 12px;
+  }
+
+  .output-label,
+  .output-label .copy-btn,
+  .field-label,
+  .step-role,
+  .flow-node,
+  .tab-btn,
+  .snippet-select,
+  .run-bar-hint,
+  .run-bar-hint kbd,
+  .console-title,
+  .console-clear,
+  .globals-title,
+  .global-pill,
+  .btn-compact,
+  .header-link,
+  .badge,
+  .batch-summary,
+  .test-panel-title,
+  footer p,
+  .tag,
+  .text-small,
+  .logo-sub {
+    font-size: 11px;
   }
 
   /* Responsive */
