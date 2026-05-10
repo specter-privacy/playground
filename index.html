@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPECTER SDK Playground</title>
+<link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo-mark">
+      <div class="logo-asset-wrap">
+        <img class="logo-asset" src="./src/logo/dark-logo-large.png" alt="SPECTER logo">
+      </div>
+      <div>
+        <div class="logo-text">SPECTER SDK</div>
+        <div class="logo-sub">POST-QUANTUM STEALTH ADDRESSES</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a class="header-link star-link" href="https://github.com/specter-privacy/specter-sdk" target="_blank" rel="noreferrer">
+        <span class="star-icon">☆</span>
+        STAR
+      </a>
+      <a class="header-link package-link" href="https://www.npmjs.com/package/@specterpq/sdk" target="_blank" rel="noreferrer">
+        @specterpq/sdk
+      </a>
+      <div class="badge live">
+        <div class="pulse"></div>
+        WASM · IN-BROWSER
+      </div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-copy">
+      <h1>Interactive<br><em>Playground</em></h1>
+      <p>Generate ML-KEM-768 stealth addresses, create payments, and scan announcements — all cryptography runs locally in WebAssembly. No keys leave your browser.</p>
+    </div>
+    <div class="hero-logo-wrap" aria-hidden="true">
+      <img class="hero-logo" src="./src/logo/dark-logo-large.png" alt="">
+    </div>
+  </div>
+
+  <!-- Tab navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tab-guided">
+      ◈ <span class="tab-label">GUIDED TOUR</span>
+    </button>
+    <button class="tab-btn" id="tab-editor">
+      ▶ <span class="tab-label">CODE EDITOR</span>
+    </button>
+  </div>
+
+  <!-- Tab: Guided -->
+  <div class="tab-panel active" id="panel-guided">
+
+  <!-- Flow progress indicator -->
+  <div class="flow" id="flow">
+    <div class="flow-node" id="fn-init">SDK INIT</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" id="fn-keygen">KEY GEN</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" id="fn-meta">META ADDR</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" id="fn-payment">PAYMENT</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" id="fn-scan">SCAN</div>
+  </div>
+
+  <!-- Init bar -->
+  <div class="init-bar" id="init-bar">
+    <div class="init-bar-left">
+      <span class="init-icon">◈</span>
+      <span id="init-status">Initializing WASM module...</span>
+    </div>
+    <span class="badge" id="init-badge">LOADING</span>
+  </div>
+
+  <div class="steps">
+
+    <!-- Step 1: Generate Keys -->
+    <div class="step active" id="step-1">
+      <div class="step-header" data-step="1">
+        <div class="step-num">01</div>
+        <div class="step-title">Generate recipient keys</div>
+        <span class="step-role role-recipient">RECIPIENT</span>
+        <span class="step-chevron">▼</span>
+      </div>
+      <div class="step-body">
+        <p class="desc">
+          Generate an ML-KEM-768 keypair for spending and viewing. Secret keys stay in memory and are redacted from serialization. Click generate to create fresh keys.
+        </p>
+        <div class="code-block"><span class="kw">const</span> keys = <span class="fn">generateSpecterKeys</span>();
+<span class="cm">// → { spending: { publicKey, secretKey }, viewing: { publicKey, secretKey } }</span></div>
+        <button class="btn btn-primary" id="btn-keygen" disabled>
+          <span class="spinner is-hidden" id="sp-keygen"></span>
+          RUN generateSpecterKeys()
+        </button>
+        <div class="output-grid grid-two" id="keygen-output">
+          <div class="output-field">
+            <div class="output-label">spending.publicKey <button class="copy-btn" data-copy-field="spending-pk">COPY</button></div>
+            <div class="output-value empty" id="spending-pk">—</div>
+          </div>
+          <div class="output-field">
+            <div class="output-label">viewing.publicKey <button class="copy-btn" data-copy-field="viewing-pk">COPY</button></div>
+            <div class="output-value empty" id="viewing-pk">—</div>
+          </div>
+          <div class="output-field field-full">
+            <div class="output-label">spending.secretKey</div>
+            <div class="output-value secret" id="spending-sk">[ redacted — never logged or serialized ]</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Build meta-address -->
+    <div class="step" id="step-2">
+      <div class="step-header" data-step="2">
+        <div class="step-num">02</div>
+        <div class="step-title">Build meta-address</div>
+        <span class="step-role role-recipient">RECIPIENT</span>
+        <span class="step-chevron">▼</span>
+      </div>
+      <div class="step-body">
+        <p class="desc">
+          Combine spending + viewing public keys into a canonical meta-address hex. Recipients publish this (e.g. on-chain or via ENS) so senders can derive unique stealth addresses.
+        </p>
+        <div class="code-block"><span class="kw">const</span> meta = <span class="fn">metaAddressFromPublicKeys</span>(
+  keys.spending.publicKey,
+  keys.viewing.publicKey,
+  { description: <span class="str">'Alice'</span> }
+);
+<span class="cm">// meta.hex — 2369 bytes, publishable</span></div>
+        <button class="btn btn-primary" id="btn-meta" disabled>
+          <span class="spinner is-hidden" id="sp-meta"></span>
+          RUN metaAddressFromPublicKeys()
+        </button>
+        <div class="output-grid grid-spaced">
+          <div class="output-field">
+            <div class="output-label">meta.hex (publishable) <button class="copy-btn" data-copy-field="meta-hex">COPY</button></div>
+            <div class="output-value empty text-small" id="meta-hex">—</div>
+          </div>
+          <div class="output-field">
+            <div class="output-label">meta.bytes.length</div>
+            <div class="output-value empty accent" id="meta-size">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Create stealth payment -->
+    <div class="step" id="step-3">
+      <div class="step-header" data-step="3">
+        <div class="step-num">03</div>
+        <div class="step-title">Create stealth payment</div>
+        <span class="step-role role-sender">SENDER</span>
+        <span class="step-chevron">▼</span>
+      </div>
+      <div class="step-body">
+        <p class="desc">
+          The sender takes a recipient's meta-address and calls <code>createStealthPayment</code>. This performs ML-KEM-768 encapsulation, derives unique stealth addresses for ETH and Sui, and produces a compact announcement.
+        </p>
+        <div class="code-block"><span class="kw">const</span> payment = <span class="fn">createStealthPayment</span>(meta.hex);
+<span class="cm">// → { ephemeralCiphertext, viewTag, ethAddress, suiAddress }</span></div>
+        <p class="desc desc-muted">
+          Or paste a meta-address hex from elsewhere:
+        </p>
+        <textarea class="input-field" id="meta-input" placeholder="Paste meta-address hex here, or use the one generated above…" rows="3"></textarea>
+        <button class="btn btn-amber" id="btn-payment" disabled>
+          <span class="spinner is-hidden" id="sp-payment"></span>
+          RUN createStealthPayment()
+        </button>
+        <div class="output-grid grid-two grid-spaced">
+          <div class="output-field field-full">
+            <div class="output-label">ephemeralCiphertext (announce this) <button class="copy-btn" data-copy-field="eph-ct">COPY</button></div>
+            <div class="output-value empty text-small" id="eph-ct">—</div>
+          </div>
+          <div class="output-field">
+            <div class="output-label">viewTag <button class="copy-btn" data-copy-field="view-tag">COPY</button></div>
+            <div class="output-value empty amber" id="view-tag">—</div>
+          </div>
+          <div class="output-field">
+            <div class="output-label">ethAddress <button class="copy-btn" data-copy-field="eth-addr">COPY</button></div>
+            <div class="output-value empty blue" id="eth-addr">—</div>
+          </div>
+          <div class="output-field field-full">
+            <div class="output-label">suiAddress <button class="copy-btn" data-copy-field="sui-addr">COPY</button></div>
+            <div class="output-value empty blue" id="sui-addr">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Scan announcement -->
+    <div class="step" id="step-4">
+      <div class="step-header" data-step="4">
+        <div class="step-num">04</div>
+        <div class="step-title">Scan announcement</div>
+        <span class="step-role role-recipient">RECIPIENT</span>
+        <span class="step-chevron">▼</span>
+      </div>
+      <div class="step-body">
+        <p class="desc">
+          Recipient decapsulates the ephemeral ciphertext using their viewing secret key, checks the view-tag (1-byte filter), and if matched, derives the spendable stealth keys.
+        </p>
+        <div class="code-block"><span class="kw">const</span> result = <span class="fn">scanAnnouncement</span>(
+  { ephemeralCiphertext, viewTag },
+  recipient.viewing,
+  recipient.spending.publicKey,
+);
+<span class="kw">if</span> (result.isMatch) {
+  <span class="cm">// result.stealthKeys.ethPrivateKey → import into viem / ethers</span>
+}</div>
+        <p class="desc desc-muted">
+          Paste announcement fields below (auto-filled from step 3 if you ran it above):
+        </p>
+        <label class="field-label">EPHEMERAL CIPHERTEXT</label>
+        <textarea class="input-field" id="scan-ct-input" placeholder="ephemeralCiphertext hex…" rows="2"></textarea>
+        <label class="field-label">VIEW TAG</label>
+        <textarea class="input-field textarea-compact" id="scan-vt-input" placeholder="viewTag (number 0–255)…" rows="1"></textarea>
+
+        <div class="test-panel">
+          <div class="test-panel-header">
+            <div>
+              <div class="test-panel-title">TAMPER TEST</div>
+              <p class="test-panel-copy">Modify the announcement only for this scan to verify that SPECTER rejects tampered data.</p>
+            </div>
+          </div>
+          <label class="check-row">
+            <input type="checkbox" id="tamper-flip-ct">
+            <span>Flip last byte of ciphertext <small>simulates a wrong announcement</small></span>
+          </label>
+          <label class="check-row">
+            <input type="checkbox" id="tamper-zero-tag">
+            <span>Force view tag to 0x00 <small>forces a view_tag_mismatch</small></span>
+          </label>
+        </div>
+
+        <button class="btn btn-blue" id="btn-scan" disabled>
+          <span class="spinner is-hidden" id="sp-scan"></span>
+          RUN scanAnnouncement()
+        </button>
+
+        <div class="scan-result" id="scan-result">
+          <div id="scan-match-banner"></div>
+          <div class="output-grid grid-two scan-keys-grid" id="scan-keys-grid">
+            <div class="output-field">
+              <div class="output-label">stealthKeys.ethAddress <button class="copy-btn" data-copy-field="scan-eth">COPY</button></div>
+              <div class="output-value empty blue" id="scan-eth">—</div>
+            </div>
+            <div class="output-field">
+              <div class="output-label">stealthKeys.suiAddress <button class="copy-btn" data-copy-field="scan-sui">COPY</button></div>
+              <div class="output-value empty blue" id="scan-sui">—</div>
+            </div>
+            <div class="output-field field-full">
+              <div class="output-label">stealthKeys.ethPrivateKey</div>
+              <div class="output-value secret">[ redacted — import directly into viem / ethers / @mysten/sui ]</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="test-panel batch-panel">
+          <div class="test-panel-header">
+            <div>
+              <div class="test-panel-title">BATCH SCAN TEST</div>
+              <p class="test-panel-copy">Generate decoy announcements and scan them with <code>scanAnnouncements()</code>.</p>
+            </div>
+          </div>
+          <div class="batch-controls">
+            <label class="range-control">
+              <span>ANNOUNCEMENT COUNT</span>
+              <input type="range" id="batch-count" min="1" max="50" value="20">
+              <strong id="batch-count-value">20</strong>
+            </label>
+            <label class="check-row check-row-inline">
+              <input type="checkbox" id="batch-include-match" checked>
+              <span>Include 1 genuine match</span>
+            </label>
+            <button class="btn btn-blue btn-compact" id="btn-batch-scan" disabled>
+              <span class="spinner is-hidden" id="sp-batch"></span>
+              RUN BATCH
+            </button>
+          </div>
+          <div class="batch-result" id="batch-result"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /steps -->
+
+  </div><!-- /panel-guided -->
+
+  <!-- Tab: Code Editor -->
+  <div class="tab-panel" id="panel-editor">
+    <div class="editor-wrap">
+      <div class="editor-toolbar">
+        <div class="editor-toolbar-left">
+          <select class="snippet-select" id="snippet-select">
+            <option value="full-flow">Full end-to-end flow</option>
+            <option value="keygen">Key generation</option>
+            <option value="meta">Build meta-address</option>
+            <option value="payment">Create stealth payment</option>
+            <option value="scan">Scan announcement</option>
+            <option value="low-level">Low-level KEM + view-tag</option>
+            <option value="blank">Blank</option>
+          </select>
+        </div>
+        <div class="editor-toolbar-right">
+          <button class="btn btn-compact btn-muted" id="copy-editor">COPY</button>
+          <button class="btn btn-primary btn-compact" id="run-code">
+            <span id="run-spinner" class="spinner is-hidden"></span>
+            ▶ RUN
+          </button>
+        </div>
+      </div>
+      <div class="editor-area">
+        <textarea id="code-editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+      </div>
+      <div class="run-bar">
+        <span class="run-bar-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> or <kbd>⌘</kbd>+<kbd>Enter</kbd> to run</span>
+        <span class="run-bar-hint" id="exec-time"></span>
+      </div>
+      <div class="output-console">
+        <div class="console-header">
+          <div class="console-title">
+            <div class="console-dot" id="console-dot"></div>
+            CONSOLE OUTPUT
+          </div>
+          <button class="console-clear" id="clear-console">CLEAR</button>
+        </div>
+        <div class="console-body" id="console-body">
+          <span class="console-empty">Output will appear here after running your code…</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="globals-card">
+      <div class="globals-title">AVAILABLE GLOBALS</div>
+      <div class="globals-list">
+        <span class="global-pill">initSpecterSdk</span>
+        <span class="global-pill">generateSpecterKeys</span>
+        <span class="global-pill">generateKeysLocal</span>
+        <span class="global-pill">metaAddressFromPublicKeys</span>
+        <span class="global-pill">parseMetaAddress</span>
+        <span class="global-pill">encapsulate</span>
+        <span class="global-pill">decapsulate</span>
+        <span class="global-pill">computeViewTag</span>
+        <span class="global-pill">verifyViewTag</span>
+        <span class="global-pill">deriveStealthAddress</span>
+        <span class="global-pill">deriveStealthSuiAddress</span>
+        <span class="global-pill">deriveStealthKeys</span>
+        <span class="global-pill">createStealthPayment</span>
+        <span class="global-pill">scanAnnouncement</span>
+        <span class="global-pill">scanAnnouncements</span>
+        <span class="global-pill constant">KYBER_PUBLIC_KEY_SIZE</span>
+        <span class="global-pill constant">KYBER_CIPHERTEXT_SIZE</span>
+        <span class="global-pill constant">PROTOCOL_VERSION</span>
+      </div>
+    </div>
+  </div><!-- /panel-editor -->
+
+  <footer>
+    <p>
+      <a href="https://github.com/specter-privacy/specter-sdk" target="_blank">github.com/specter-privacy/specter-sdk</a>
+      <span class="tag green">Apache-2.0</span>
+      <span class="tag">@specterpq/sdk@0.1.0</span>
+    </p>
+    <p>All cryptography runs client-side · No telemetry · No network calls</p>
+  </footer>
+
+</div><!-- /wrap -->
+
+<script type="importmap">
+{
+  "imports": {
+    "zod": "https://esm.sh/zod@3.24.1"
+  }
+}
+</script>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
