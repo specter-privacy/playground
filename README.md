@@ -15,7 +15,7 @@ This playground is a static ES module site. It does not require npm install, a b
 From the repository root:
 
 ```sh
-cd specter-pq/playground
+cd playground
 python3 -m http.server 4173 --bind 127.0.0.1
 ```
 
